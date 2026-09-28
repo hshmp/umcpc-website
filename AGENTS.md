@@ -40,6 +40,25 @@ Sometimes comments are part of an automated documenting process, type annotation
 
 If you see code that is being duplicated with very few changes: you should extract it into a function or variable. Avoid leaving raw literals unexplained unless they are common constants like `0`, `1`, `""`, or halving and doubling.
 
+## Commits
+
+- one author per commit, no `Co-Authored-By` trailers or other attribution lines
+- follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0-beta.4/#specification) as `<type>: <what was fixed or done>` with no scope
+- use the Angular types `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`
+- keep the subject lowercase with no full stop and list multiple changes with commas
+- the body is optional and reserved for important details like breaking changes or infrastructure config
+- start the body with `BREAKING CHANGE:` when something stops working without a follow up action
+
+```
+fix: scrollbars, transitions, lag, image loading
+```
+
+```
+build: move events to notion
+
+BREAKING CHANGE: needs NOTION_SECRET and NOTION_EVENTS_DATA_SOURCE_ID set in vercel
+```
+
 ## Examples
 
 ### Bad
