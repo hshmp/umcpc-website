@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import SPONSORS from '../../public/sponsors/sponsors.json'
 
 const DEFAULT_IN_VIEW_OPTIONS = {
   threshold: 0.1,
@@ -124,40 +125,20 @@ const groupByTier = (items) => {
   return out
 }
 
-const tierOrder = ['Diamond', 'Gold', 'Silver', 'Bronze', 'Community Partner']
+const TIER_ORDER = ['Diamond', 'Gold', 'Silver', 'Bronze', 'Community Partner']
+
+// read at build time so the cards ship in the page html, no fetch or loading state
+const SPONSOR_TIERS = (() => {
+  const grouped = groupByTier(SPONSORS)
+  const ordered = TIER_ORDER.filter((t) => grouped[t]?.length)
+  const extra = Object.keys(grouped).filter((t) => !TIER_ORDER.includes(t))
+  return [...ordered, ...extra].map((tier) => ({
+    tier,
+    sponsors: grouped[tier],
+  }))
+})()
 
 const Sponsors = () => {
-  const [sponsors, setSponsors] = useState([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const run = async () => {
-      try {
-        const res = await fetch(`/sponsors/sponsors.json`)
-        const data = await res.json()
-        setSponsors(Array.isArray(data) ? data : [])
-      } catch {
-        setSponsors([])
-      } finally {
-        setLoading(false)
-      }
-    }
-    run()
-  }, [])
-
-  const pages = useMemo(() => {
-    const grouped = groupByTier(sponsors)
-    const ordered = tierOrder.filter((t) => grouped[t]?.length)
-    const extra = Object.keys(grouped).filter((t) => !tierOrder.includes(t))
-    return [...ordered, ...extra].map((tier) => ({
-      tier,
-      sponsors: grouped[tier],
-    }))
-  }, [sponsors])
-
-  if (loading)
-    return <p className="text-font mx-10 mt-10">Loading sponsors...</p>
-
   return (
     <div className="flex-1 px-10 pb-16">
       <FadeIn>
@@ -176,11 +157,11 @@ const Sponsors = () => {
         </div>
       </FadeIn>
 
-      {pages.length === 0 && (
+      {SPONSOR_TIERS.length === 0 && (
         <p className="text-center text-gray-500">No sponsors yet.</p>
       )}
 
-      {pages.map((page, tierIdx) => (
+      {SPONSOR_TIERS.map((page, tierIdx) => (
         <div key={page.tier} className="mb-12">
           <FadeIn delay={staggerDelay(tierIdx)}>
             <div className="flex items-end justify-between gap-4 mb-4">
